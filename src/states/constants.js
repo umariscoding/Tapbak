@@ -1,8 +1,11 @@
 const { baseUrl, api } = {
-  baseUrl: "https://0a4ed0f5ae0c.ngrok-free.app",
+  baseUrl: "https://433a49061fab.ngrok-free.app",
   api: {
     endpoints: {
-      createPass: "/pass/create/:vendorName",
+      "CREATE_PASS": "/pass/create/:vendorName",
+
+      "GET_FIELD_DEFINITIONS": "/pass/field-definitions",
+
     },
   },
 };

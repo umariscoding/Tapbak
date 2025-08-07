@@ -4,12 +4,13 @@ import { api } from "./constants.js";
 export const addToWalletHandler = async (name, email, phone, vendorName) => {
   try {
     const formData = new FormData();
-    formData.append("name", name);
+    formData.append("firstName", name.split(" ")[0]);
+    formData.append("lastName", name.split(" ")[1]);
     formData.append("email", email);
-    formData.append("phone", phone);
+    formData.append("contactNumber", phone);
 
     const response = await apiClient.post(
-      api.endpoints.createPass.replace(":vendorName", vendorName),
+      api.endpoints.CREATE_PASS.replace(":vendorName", vendorName),
       formData,
       {
         headers: {
@@ -29,3 +30,9 @@ export const addToWalletHandler = async (name, email, phone, vendorName) => {
     throw error;
   }
 };
+
+
+export const getFieldDefinitions = async() => {
+  const response = await apiClient.get(api.endpoints.GET_FIELD_DEFINITIONS)
+  return response.data
+}
