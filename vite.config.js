@@ -5,6 +5,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    allowedHosts: ["https://deep-planes-greet.loca.lt", "deep-planes-greet.loca.lt"]
+    allowedHosts: true
   }
 })

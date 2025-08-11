@@ -36,3 +36,15 @@ export const getFieldDefinitions = async() => {
   const response = await apiClient.get(api.endpoints.GET_FIELD_DEFINITIONS)
   return response.data
 }
+
+
+export const createVendor = async(data) => {
+  const response = await apiClient.post(api.endpoints.CREATE_VENDOR, {
+    email: data.email,
+    password: data.password,
+    name: data.name,
+    business_name: data.businessName,
+    business_description: data.businessTagline
+  })
+  return response.data;
+}
