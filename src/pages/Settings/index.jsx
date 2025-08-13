@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import TextField from "../../Components/base/TextField";
 import { updateVendor } from "../../states/app";
 import Button from "../../Components/base/Button";
+import Container from "../../Components/base/Container";
+import { useUser } from "../../states/contexts/User";
 
 function Settings() {
+  const {user} = useUser();
   const [businessInfo, setBusinessInfo] = useState({
-    name: "",
-    description: "",
+    business_name: user?.business_name,
+    business_description: user?.business_description,
   });
 
   const handleBusinessInfoChange = (field, value) => {
@@ -33,27 +36,26 @@ function Settings() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-5 h-fit">
-          <div className="font-medium mb-4">Basic Information</div>
+        <Container title="Basic Information">
           <div className="flex flex-col gap-4">
             <TextField
               label="Business Name"
-              value={businessInfo.name}
-              onChange={(e) => handleBusinessInfoChange("name", e.target.value)}
+              value={businessInfo.business_name}
+              onChange={(e) => handleBusinessInfoChange("business_name", e.target.value)}
               placeholder="Enter your business name"
             />
             <TextField
               label="Description"
-              value={businessInfo.description}
+              value={businessInfo.business_description}
               onChange={(e) =>
-                handleBusinessInfoChange("description", e.target.value)
+                handleBusinessInfoChange("business_description", e.target.value)
               }
               placeholder="This will be shown on the card as a description"
               multiline
               rows={3}
             />
           </div>
-        </div>
+        </Container>
       </div>
     </div>
   );

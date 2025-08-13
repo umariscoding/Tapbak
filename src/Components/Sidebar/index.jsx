@@ -9,8 +9,8 @@ const NavLink = ({ to, icon, children }) => {
   
   return (
     <RouterNavLink
-      className={`flex px-4 gap-4 items-center hover:bg-neutral-900 hover:text-white transition-all duration-300 p-2 rounded-md ${
-        isActive ? "bg-neutral-900 text-white" : ""
+      className={`flex px-4 gap-4 items-center hover:bg-blue-50 hover:text-blue-700 transition-all duration-300 p-2 rounded-md ${
+        isActive ? "bg-blue-100 text-blue-700 border-r-2 border-blue-500" : ""
       }`}
       to={to}
     >

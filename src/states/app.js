@@ -1,5 +1,6 @@
 import apiClient from "./apiClient";
 import { api } from "./constants.js";
+import { showSuccess } from "../utils/toast.js";
 
 export const initializeAuth = () => {
   const currentVendor = window.localStorage.getItem("currentVendor");
@@ -15,13 +16,21 @@ export const loadStatistics = async () => {
   return response.data;
 };
 
-export const addToWalletHandler = async (name, email, phone, vendorName) => {
+export const addToWalletHandler = async (
+  firstName,
+  lastName,
+  email,
+  phone,
+  vendorName,
+  dateOfBirth
+) => {
   try {
     const formData = new FormData();
-    formData.append("firstName", name.split(" ")[0]);
-    formData.append("lastName", name.split(" ")[1]);
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
     formData.append("email", email);
     formData.append("contactNumber", phone);
+    formData.append("dateOfBirth", dateOfBirth);
 
     const response = await apiClient.post(
       api.endpoints.CREATE_PASS.replace(":vendorName", vendorName),
@@ -85,12 +94,17 @@ export const getVendorConfiguration = async () => {
   };
 };
 
-export const updateVendorConfiguration = async (data) => {
-  console.log(data);
+export const updateVendorConfiguration = async (data, images) => {
+  for (const [key, value] of Object.entries(images)) {
+    if (value) {
+      const response = await uploadImage(value);
+      data.configuration[key] = response.url;
+    }
+  }
+  console.log(data.configuration);
   const fields = [];
   fields.push(data.fields.header_field);
   fields.push(...data.fields.secondary_fields);
-  console.log(fields);
 
   const response = await apiClient.post(
     api.endpoints.UPDATE_VENDOR_CONFIGURATION,
@@ -124,6 +138,72 @@ export const updateVendor = async (data) => {
     business_name: data.business_name,
     business_description: data.business_description,
   });
+  if(response.status === 200){
+    showSuccess("Vendor updated successfully!");
+  window.localStorage.setItem(
+      "currentVendor",
+      JSON.stringify(response.data.vendor)
+    );
+  }
   return response.data;
 };
 
+export const getPublicVendor = async (vendor_id) => {
+  const response = await apiClient.get(
+    api.endpoints.GET_PUBLIC_VENDOR.replace(":vendor_id", vendor_id)
+  );
+  return response.data;
+};
+
+export const uploadImage = async (file) => {
+  // If it's already a URL string, return it as is
+  if (
+    typeof file === "string" &&
+    (file.startsWith("http://") || file.startsWith("https://"))
+  ) {
+    return { url: file };
+  }
+
+  // Otherwise, upload the file
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await apiClient.post(api.endpoints.UPLOAD_IMAGE, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+export const fetchCustomerData = async (customer_id) => {
+  const response = await apiClient.get(
+    api.endpoints.FETCH_CUSTOMER_DATA.replace(":customer_id", customer_id)
+  );
+  console.log(response.data);
+  return response.data;
+};
+
+export const processTransaction = async (
+  customer_id,
+  transaction_type,
+  transaction_amount,
+  transaction_points
+) => {
+  const response = await apiClient.post(
+    api.endpoints.PROCESS_TRANSACTION,
+    {
+      customer_id: customer_id,
+      transaction_type: transaction_type,
+      transaction_amount: transaction_amount,
+      transaction_points: transaction_points,
+    }
+  );
+  return response.data;
+};
+
+export const getTransactions = async (data) => {
+  const response = await apiClient.get(api.endpoints.GET_TRANSACTIONS, {
+    params: data,
+  });
+  return response.data;
+};

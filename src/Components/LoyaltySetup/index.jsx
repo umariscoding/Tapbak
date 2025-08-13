@@ -57,7 +57,8 @@ const Header = () => (
 const SetupForm = ({ 
   configuration, 
   onLoyaltySettingsChange, 
-  onInitialSetup 
+  onInitialSetup,
+  isLoading = false
 }) => (
   <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg">
     <div className="mb-8">
@@ -113,6 +114,7 @@ const SetupForm = ({
           onChange={(e) => onLoyaltySettingsChange("total_points", e.target.value)}
           type="number"
           min={1}
+          max="10"
           placeholder="e.g., 10"
         />
       </ConfigurationSection>
@@ -122,16 +124,21 @@ const SetupForm = ({
       <Button
         onClick={onInitialSetup}
         variant="primary"
-        disabled={!configuration.points_system}
+        disabled={!configuration.points_system || isLoading}
         className="px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
       >
-        {configuration.points_system ? "Continue to Card Design" : "Select Program Type"}
+        {isLoading 
+          ? "Setting up..." 
+          : configuration.points_system 
+            ? "Continue to Card Design" 
+            : "Select Program Type"
+        }
       </Button>
     </div>
   </div>
 );
 
-function LoyaltySetup({ configuration, onLoyaltySettingsChange, onInitialSetup }) {
+function LoyaltySetup({ configuration, onLoyaltySettingsChange, onInitialSetup, isLoading = false }) {
   return (
     <div className="flex flex-col p-5 gap-4">
       <Header />
@@ -141,6 +148,7 @@ function LoyaltySetup({ configuration, onLoyaltySettingsChange, onInitialSetup }
           configuration={configuration}
           onLoyaltySettingsChange={onLoyaltySettingsChange}
           onInitialSetup={onInitialSetup}
+          isLoading={isLoading}
         />
       </div>
     </div>

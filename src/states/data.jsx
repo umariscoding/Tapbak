@@ -94,7 +94,7 @@ export const ROUTES = [
     showNavbar: true,
   },
   {
-    path: "/join/:vendorSlug",
+    path: "/join/:vendor_id",
     element: "CustomerForm",
     showNavbar: false,
     showSidebar: false,

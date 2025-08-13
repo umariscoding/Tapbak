@@ -1,6 +1,6 @@
 import React from "react";
 
-function TextField({ id, label, placeholder, value, onChange, type = "text" }) {
+function TextField({ id, label, placeholder, value, onChange, type = "text", min, max }) {
   return (
     <div className="flex flex-col gap-2">
       <div class="text-sm text-gray-500 self-start" htmlFor={id}>

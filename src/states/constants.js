@@ -15,7 +15,14 @@ const { baseUrl, api } = {
 
       GET_CUSTOMER_DATA: "/pass/customers",
       UPDATE_CUSTOMER_STATUS: "/pass/customers/:customer_id/status",
-      UPDATE_VENDOR: "/pass/vendor"
+      UPDATE_VENDOR: "/pass/vendor", 
+      GET_PUBLIC_VENDOR: "/pass/public-vendor/:vendor_id",
+      UPLOAD_IMAGE: "/pass/upload-image", 
+
+      FETCH_CUSTOMER_DATA: "/pass/customers/:customer_id", 
+
+      PROCESS_TRANSACTION: "/pass/process-transaction",
+      GET_TRANSACTIONS: "/pass/transactions"
     },
   },
 };

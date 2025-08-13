@@ -1,66 +1,104 @@
-import React, { useState, useEffect } from 'react';
-import TextField from '../../Components/base/TextField';
-import Button from '../../Components/base/Button';
-import { FiSearch, FiDollarSign, FiRefreshCcw } from 'react-icons/fi';
-import { useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import TextField from "../../Components/base/TextField";
+import Button from "../../Components/base/Button";
+import { FiSearch, FiDollarSign, FiRefreshCcw, FiGift } from "react-icons/fi";
+import { useSearchParams } from "react-router-dom";
+import { fetchCustomerData, processTransaction } from "../../states/app";
+import { showSuccess, showError, showInfo } from "../../utils/toast";
 
 function ProcessTransaction() {
-  const [searchParams] = useSearchParams()
-  const [customerId, setCustomerId] = useState(searchParams.get('customer_id'));
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [customerId, setCustomerId] = useState(searchParams.get("customer_id"));
   const [customer, setCustomer] = useState(null);
-  const [transactionAmount, setTransactionAmount] = useState('');
-  const [pointsToRedeem, setPointsToRedeem] = useState('');
-  const [step, setStep] = useState('search');
-  const fetchCustomer = () => {
-    // Simulating API call
-    const mockCustomer = {
-      id: customerId,
-      name: 'Alice Smith',
-      email: 'alice.s@example.com',
-      points: 1250,
-      status: 'active',
-      joinDate: '2024-01-15',
-      recentTransactions: [
-        { date: '2024-02-10', amount: 50, points: 150 },
-        { date: '2024-02-05', amount: 30, points: 90 }
-      ]
-    };
-    setCustomer(mockCustomer);
-    setStep('details');
+  const [transactionAmount, setTransactionAmount] = useState("");
+  const [remainingPoints, setRemainingPoints] = useState("");
+  const [transactionPoints, setTransactionPoints] = useState(0);
+  const [transactionType, setTransactionType] = useState("points");
+  const [step, setStep] = useState("search");;
+  const [isLoading, setIsLoading] = useState(false);
+
+  const resetForm = () => {
+    setCustomerId("");
+    setCustomer(null);
+    setTransactionAmount("");
+    setRemainingPoints("");
+    setTransactionPoints(0);
+    setStep("search");
   };
-  
+
+  const fetchCustomer = async () => {
+    try {
+      setIsLoading(true);
+      const customer = await fetchCustomerData(customerId);
+      setCustomer(customer.customer);
+      setRemainingPoints(customer.customer?.loyalty_card?.loyalty_points);
+    } catch (error) {
+      console.error("Failed to fetch customer:", error);
+      showError("Failed to fetch customer. Please check the customer ID.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    console.log(customerId);
     if (customerId) {
       fetchCustomer();
+      setStep("details");
     }
   }, []);
 
-
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     if (customerId) {
-      fetchCustomer();
+      await fetchCustomer();
+      setStep("details");
+    } else {
+      showError("Please enter a customer ID");
     }
   };
 
-  const handleProcess = () => {
-    // Handle transaction processing
-    console.log('Processing transaction:', {
-      customerId,
-      transactionAmount,
-      pointsToRedeem
-    });
+  const handleProcess = async () => {
+    if (!transactionAmount || !transactionPoints) {
+      showError("Please fill in all required fields");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await processTransaction(
+        customerId,
+        transactionType,
+        transactionAmount,
+        transactionPoints
+      );
+      
+      showSuccess("Transaction processed successfully!")
+      setTimeout(() => {
+        navigate("/transactions");
+      }, 1500);
+      
+    } catch (error) {
+      console.error("Failed to process transaction:", error);
+      showError("Failed to process transaction. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Process Transaction</h1>
-        <p className="text-gray-600">Process payments and manage loyalty points</p>
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+          Process Transaction
+        </h1>
+        <p className="text-gray-600">
+          Process payments and manage loyalty points
+        </p>
       </div>
 
-      {step === 'search' && (
+      {step === "search" && (
         <div className="bg-white rounded-xl shadow-sm p-6">
           <form onSubmit={handleSearch} className="max-w-md">
             <TextField
@@ -76,20 +114,23 @@ function ProcessTransaction() {
               fullWidth
               startIcon={<FiSearch />}
               className="mt-4"
+              disabled={isLoading}
             >
-              Find Customer
+              {isLoading ? "Finding..." : "Find Customer"}
             </Button>
           </form>
         </div>
       )}
 
-      {step === 'details' && customer && (
+      {step === "details" && customer && (
         <div className="space-y-6">
           {/* Customer Details Card */}
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h2 className="text-xl font-semibold text-gray-800">{customer.name}</h2>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  {customer.first_name} {customer.last_name}
+                </h2>
                 <p className="text-gray-600">{customer.email}</p>
               </div>
               <div className="text-right">
@@ -97,32 +138,49 @@ function ProcessTransaction() {
                 <div className="font-medium">{customer.id}</div>
               </div>
             </div>
-            
+
+            {/* View Rewards Button */}
+            <div className="mb-4">
+              <Button
+                variant="secondary"
+                startIcon={<FiGift />}
+                className="mb-4"
+              >
+                View Customer Rewards
+              </Button>
+            </div>
+
             <div className="grid grid-cols-3 gap-6 mb-6">
               <div className="bg-blue-50 rounded-lg p-4">
                 <div className="text-sm text-gray-600">Available Points</div>
-                <div className="text-2xl font-semibold text-blue-600">{customer.points}</div>
+                <div className="text-2xl font-semibold text-blue-600">
+                  {customer?.loyalty_card?.loyalty_points}
+                </div>
               </div>
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="text-sm text-gray-600">Join Date</div>
-                <div className="text-lg font-medium">{new Date(customer.joinDate).toLocaleDateString()}</div>
+                <div className="text-lg font-medium">
+                  {new Date(customer.created_at).toLocaleDateString()}
+                </div>
               </div>
               <div className="bg-green-50 rounded-lg p-4">
                 <div className="text-sm text-gray-600">Status</div>
-                <div className="text-lg font-medium capitalize">{customer.status}</div>
+                <div className="text-lg font-medium capitalize">
+                  {customer.status}
+                </div>
               </div>
             </div>
 
             <div className="border-t pt-4">
               <h3 className="font-medium mb-3">Recent Transactions</h3>
               <div className="space-y-2">
-                {customer.recentTransactions.map((transaction, index) => (
+                {/* {customer.recentTransactions.map((transaction, index) => (
                   <div key={index} className="flex justify-between items-center text-sm p-2 bg-gray-50 rounded">
                     <div>{new Date(transaction.date).toLocaleDateString()}</div>
                     <div className="text-gray-600">${transaction.amount}</div>
                     <div className="text-blue-600">+{transaction.points} points</div>
                   </div>
-                ))}
+                ))} */}
               </div>
             </div>
           </div>
@@ -140,30 +198,38 @@ function ProcessTransaction() {
                 placeholder="Enter amount"
               />
               <TextField
-                label="Points to Redeem"
-                value={pointsToRedeem}
-                onChange={(e) => setPointsToRedeem(e.target.value)}
+                label={`${
+                  transactionType === "points"
+                    ? "Points to Add/Deduct"
+                    : "Amount to Add/Deduct"
+                }`}
+                value={transactionPoints}
+                onChange={(e) => setTransactionPoints(e.target.value)}
                 type="number"
                 min="0"
-                max={customer.points}
-                placeholder="Enter points to redeem"
+                max={remainingPoints}
+                placeholder={`Enter ${
+                  transactionType === "points" ? "points" : "amount"
+                } to add/deduct`}
               />
+
               <div className="flex gap-3 pt-2">
-                <Button
-                  variant="secondary"
-                  onClick={() => setStep('search')}
-                  startIcon={<FiRefreshCcw />}
-                  fullWidth
-                >
-                  New Customer
-                </Button>
                 <Button
                   variant="primary"
                   onClick={handleProcess}
                   startIcon={<FiDollarSign />}
                   fullWidth
+                  disabled={isLoading}
                 >
-                  Process Transaction
+                  {isLoading ? "Processing..." : "Process Transaction"}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={resetForm}
+                  startIcon={<FiRefreshCcw />}
+                  disabled={isLoading}
+                >
+                  Reset
                 </Button>
               </div>
             </div>

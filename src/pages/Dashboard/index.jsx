@@ -20,7 +20,7 @@ function StatCard({ title, description, stats, button }) {
           </div>
         ))}
       </div>
-      <Button variant={button.variant} className="w-full" onClick={() => navigate(button.navigateTo)}>
+      <Button variant={button.variant} className="w-full" onClick={() => navigate(button.href)}>
         {button.text}
       </Button>
     </div>
@@ -31,14 +31,17 @@ const quickLinks = [
   {
     icon: <FaMoneyBill1Wave />,
     text: "Manage Subscription",
+    href: "/settings"
   },
   {
     icon: <FaNetworkWired />,
     text: "Update Points Manually",
+    href: "/process"
   },
   {
     icon: <FaBuildingCircleArrowRight />,
     text: "Business Profile Settings",
+    href: "/settings"
   },
 ];
 
@@ -62,7 +65,7 @@ function Dashboard() {
         },
         { value: statistics?.active_customers, label: "Active Now", color: "text-lg text-gray-800" },
       ],
-      button: { text: "View Customers", variant: "secondary", navigateTo: "/customers" },
+      button: { text: "View Customers", variant: "secondary", href: "/customers" },
     },
     {
       title: "Transaction Overview",
@@ -84,7 +87,7 @@ function Dashboard() {
           color: "text-lg text-gray-800",
         },
       ],
-      button: { text: "Process Transaction", variant: "secondary", navigateTo: "/transactions" },
+      button: { text: "Process Transaction", variant: "secondary", href: "/transactions" },
     },
   ];
   
@@ -106,9 +109,10 @@ function Dashboard() {
             {quickLinks.map((link, index) => (
               <div
                 key={index}
-                className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer flex-1"
+                className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg hover:bg-blue-50 hover:border-blue-200 border border-transparent transition-colors cursor-pointer flex-1"
+                onClick={() => navigate(link.href)}
               >
-                <div className="text-lg text-gray-600">{link.icon}</div>
+                <div className="text-lg text-blue-600">{link.icon}</div>
                 <span className="text-gray-800 font-medium text-sm">
                   {link.text}
                 </span>
@@ -118,8 +122,8 @@ function Dashboard() {
         </div>
 
         <div className="flex gap-4 my-8">
-          <div className="bg-blue-50 w-64 rounded-lg p-4">
-            <div className="text-lg font-semibold text-gray-800 mb-1">
+          <div className="bg-blue-50 w-64 rounded-lg p-4 border border-blue-200">
+            <div className="text-lg font-semibold text-blue-800 mb-1">
               Loyalty Card Overview
             </div>
             <div className="text-gray-600 text-xs mb-3">

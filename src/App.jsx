@@ -1,6 +1,8 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { UserProvider } from "./states/contexts/User";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 import PrimaryLayout from "./layout/primary";
 import Auth from "./pages/Signup";
@@ -31,7 +33,7 @@ function App() {
         showNavbar: true,
     },
     {
-        path: "/join/:vendorSlug",
+        path: "/join/:vendor_id",
         element: <CustomerForm />,
         showNavbar: false,
         showSidebar: false,
@@ -63,9 +65,22 @@ function App() {
         showNavbar: false,
         showSidebar: false,
     },
-];
+  ];
+
   return (
     <UserProvider>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Routes>
         {ROUTES.map((route, index) => (
           <Route

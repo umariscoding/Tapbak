@@ -3,6 +3,7 @@ import logo from "../../../public/signup.jpg";
 import TextField from "../../Components/base/TextField";
 import { useNavigate } from "react-router-dom";
 import { loginVendor } from "../../states/app";
+import { showSuccess, showError, showInfo } from "../../utils/toast";
 
 function Login() {
   const [data, setData] = useState({
@@ -13,17 +14,34 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  const resetForm = () => {
+    setData({
+      email: "",
+      password: "",
+    });
+  };
+
   const onSubmit = async () => {
+    if (!isFormValid()) {
+      showError("Please fill in all required fields");
+      return;
+    }
+
     setIsLoading(true);
     try {
-      loginVendor(data).then((data) => {
-        if (data.message === "Login successful") {
+      const response = await loginVendor(data);
+      if (response.message === "Login successful") {
+        showSuccess("Login successful! Redirecting to dashboard...");
+        resetForm();
+        setTimeout(() => {
           navigate("/");
-        }
-      });
+        }, 1500);
+      } else {
+        showError("Login failed. Please check your credentials.");
+      }
     } catch (error) {
       console.log(error);
-      alert('Login failed. Please try again.');
+      showError('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -52,6 +70,7 @@ function Login() {
             value={data.email}
             onChange={(e) => setData({ ...data, email: e.target.value })}
             type="email"
+            required
           />
           <TextField
             label="Password"
@@ -59,20 +78,31 @@ function Login() {
             value={data.password}
             onChange={(e) => setData({ ...data, password: e.target.value })}
             type="password"
+            required
           />
         </div>
         
-        <button
-          onClick={onSubmit}
-          disabled={!isFormValid() || isLoading}
-          className={`my-2 w-full p-2 rounded-md transition-all duration-200 ${
-            !isFormValid() || isLoading
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-500 hover:bg-blue-600 transform hover:scale-105'
-          } text-white`}
-        >
-          {isLoading ? 'Logging in...' : 'Login'}
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={onSubmit}
+            disabled={!isFormValid() || isLoading}
+            className={`flex-1 p-2 rounded-md transition-all duration-200 ${
+              !isFormValid() || isLoading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-500 hover:bg-blue-600 transform hover:scale-105'
+            } text-white`}
+          >
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+          
+          <button
+            onClick={resetForm}
+            disabled={isLoading}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+          >
+            Reset
+          </button>
+        </div>
 
         <div className="text-sm text-gray-600 mt-4">
           Don't have an account?{' '}
