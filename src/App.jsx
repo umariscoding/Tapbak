@@ -1,17 +1,19 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { UserProvider } from "./states/contexts/User";
 import "./index.css";
 import PrimaryLayout from "./layout/primary";
 import Auth from "./pages/Signup";
+import Login from "./pages/Login";
 import FormPage from "./pages/FormPage";
 import Dashboard from "./pages/Dashboard";
 import CardDesign from "./pages/CardDesign";
 import Customers from "./pages/Customers";
+import CustomerForm from "./pages/CustomerForm";
 import Transactions from "./pages/Transactions";
 import Settings from "./pages/Settings";
 import ProcessTransaction from "./pages/ProcessTransaction";
 function App() {
-
   const ROUTES = [
     {
         path: "/",
@@ -29,6 +31,12 @@ function App() {
         showNavbar: true,
     },
     {
+        path: "/join/:vendorSlug",
+        element: <CustomerForm />,
+        showNavbar: false,
+        showSidebar: false,
+    },
+    {
         path: "/transactions",
         element: <Transactions />,
         showNavbar: true,
@@ -44,21 +52,30 @@ function App() {
         showNavbar: true,
     },
     {
+        path: "/login",
+        element: <Login />,
+        showNavbar: false,
+        showSidebar: false,
+    },
+    {
         path: "/signup",
         element: <Auth />,
         showNavbar: false,
+        showSidebar: false,
     },
 ];
   return (
-    <Routes>
-      {ROUTES.map((route, index) => (
-        <Route
+    <UserProvider>
+      <Routes>
+        {ROUTES.map((route, index) => (
+          <Route
           key={index}
           path={route.path}
-          element={<PrimaryLayout showNavbar={route.showNavbar}>{route.element}</PrimaryLayout>}
-        />
-      ))}
-    </Routes>
+          element={<PrimaryLayout showNavbar={route.showNavbar} showSidebar={route.showSidebar}>{route.element}</PrimaryLayout>}
+          />
+        ))}
+      </Routes>
+    </UserProvider>
   );
 }
 

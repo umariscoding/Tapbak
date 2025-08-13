@@ -1,43 +1,13 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import Button from "../../Components/base/Button";
 import loyaltyCard from "../../../public/loyalty.jpg";
 import { FaNetworkWired } from "react-icons/fa";
 import { FaBuildingCircleArrowRight, FaMoneyBill1Wave } from "react-icons/fa6";
-
-const statCards = [
-  {
-    title: "Customer Quick Stats",
-    description: "Overview of your customer base and engagement.",
-    stats: [
-      {
-        value: "1,250",
-        label: "Total Customers",
-        color: "text-blue-500 text-2xl font-bold",
-      },
-      { value: "980", label: "Active Now", color: "text-lg text-gray-800" },
-    ],
-    button: { text: "View Customers", variant: "secondary" },
-  },
-  {
-    title: "Transaction Overview",
-    description: "Summary of loyalty points and transaction activity.",
-    stats: [
-      {
-        value: "4,820",
-        label: "Total Transactions",
-        color: "text-orange-500 text-2xl font-bold",
-      },
-      {
-        value: "95,000",
-        label: "Points Awarded",
-        color: "text-lg text-gray-800",
-      },
-    ],
-    button: { text: "Process Transaction", variant: "secondary" },
-  },
-];
-
+import { useUser } from "../../states/contexts/User";
+import { loadStatistics } from "../../states/app";
+import { useNavigate } from "react-router-dom";
 function StatCard({ title, description, stats, button }) {
+  const navigate = useNavigate();
   return (
     <div className="bg-gray-50 rounded-lg p-4 h-fit min-w-[220px] flex-1">
       <h2 className="text-lg font-semibold text-gray-800 mb-1">{title}</h2>
@@ -50,7 +20,7 @@ function StatCard({ title, description, stats, button }) {
           </div>
         ))}
       </div>
-      <Button variant={button.variant} className="w-full">
+      <Button variant={button.variant} className="w-full" onClick={() => navigate(button.navigateTo)}>
         {button.text}
       </Button>
     </div>
@@ -73,6 +43,52 @@ const quickLinks = [
 ];
 
 function Dashboard() {
+  const { user } = useUser();
+  const [statistics, setStatistics] = useState(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    loadStatistics().then((data) => setStatistics(data.statistics));
+  }, []);
+
+  const statCards = [
+    {
+      title: "Customer Quick Stats",
+      description: "Overview of your customer base and engagement.",
+      stats: [
+        {
+          value: statistics?.total_customers,
+          label: "Total Customers",
+          color: "text-blue-500 text-2xl font-bold",
+        },
+        { value: statistics?.active_customers, label: "Active Now", color: "text-lg text-gray-800" },
+      ],
+      button: { text: "View Customers", variant: "secondary", navigateTo: "/customers" },
+    },
+    {
+      title: "Transaction Overview",
+      description: "Summary of loyalty points and transaction activity.",
+      stats: [
+        {
+          value: statistics?.total_transactions,
+          label: "Total Transactions",
+          color: "text-orange-500 text-2xl font-bold",
+        },
+        {
+          value: statistics?.points_system.charAt(0).toUpperCase() + statistics?.points_system.slice(1),
+          label: "Loyalty System",
+          color: "text-lg font-semibold text-gray-800",
+        },
+        {
+          value: statistics?.total_points + " " + (statistics?.points_system),
+          label: "Reward At",
+          color: "text-lg text-gray-800",
+        },
+      ],
+      button: { text: "Process Transaction", variant: "secondary", navigateTo: "/transactions" },
+    },
+  ];
+  
+
   return (
     <div className="flex items-center justify-center mb-10">
       <div className="flex flex-col gap-4">
@@ -116,7 +132,7 @@ function Dashboard() {
               Your digital loyalty card as seen by your customers in their
               mobile wallets. Ensure it reflects your brand perfectly.
             </div>
-            <Button variant="primary" className="mt-20">
+            <Button onClick={() => navigate("/card-design")} variant="primary" className="mt-20">
               View/Edit Design
             </Button>
           </div>

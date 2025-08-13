@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextField from '../../Components/base/TextField';
 import Button from '../../Components/base/Button';
 import { FiSearch, FiDollarSign, FiRefreshCcw } from 'react-icons/fi';
+import { useSearchParams } from 'react-router-dom';
 
 function ProcessTransaction() {
-  const [customerId, setCustomerId] = useState('');
+  const [searchParams] = useSearchParams()
+  const [customerId, setCustomerId] = useState(searchParams.get('customer_id'));
   const [customer, setCustomer] = useState(null);
   const [transactionAmount, setTransactionAmount] = useState('');
   const [pointsToRedeem, setPointsToRedeem] = useState('');
-  const [step, setStep] = useState('search'); // search, details, process
-
-  // Mock customer data - replace with actual API call
+  const [step, setStep] = useState('search');
   const fetchCustomer = () => {
     // Simulating API call
     const mockCustomer = {
@@ -28,6 +28,14 @@ function ProcessTransaction() {
     setCustomer(mockCustomer);
     setStep('details');
   };
+  
+  useEffect(() => {
+    console.log(customerId);
+    if (customerId) {
+      fetchCustomer();
+    }
+  }, []);
+
 
   const handleSearch = (e) => {
     e.preventDefault();

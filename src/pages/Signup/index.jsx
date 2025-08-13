@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import logo from "../../../public/signup.jpg";
 import TextField from "../../Components/base/TextField";
 import { createVendor } from "../../states/app";
+import { useNavigate } from "react-router-dom";
 
 function Auth() {
   const [data, setData] = useState({
@@ -10,11 +11,15 @@ function Auth() {
     password: "",
     businessName: "",
     businessTagline: "",
-  })
-
+  });
+  const navigate = useNavigate();
   const onSubmit = async () => {
     try {
-      const res = await createVendor(data);
+      const res = createVendor(data).then((data) => {
+        if (data.email) {
+          navigate("/login");
+        }
+      });
       console.log(res);
     } catch (error) {
       console.log(error);
@@ -33,9 +38,24 @@ function Auth() {
         </div>
 
         <div className="grid grid-cols-2 gap-5">
-          <TextField label="Name" placeholder="Enter your name" value={data.name} onChange={(e) => setData({ ...data, name: e.target.value })} />
-          <TextField label="Email" placeholder="Enter your email" value={data.email} onChange={(e) => setData({ ...data, email: e.target.value })} />
-          <TextField label="Password" placeholder="Enter your password" value={data.password} onChange={(e) => setData({ ...data, password: e.target.value })} />
+          <TextField
+            label="Name"
+            placeholder="Enter your name"
+            value={data.name}
+            onChange={(e) => setData({ ...data, name: e.target.value })}
+          />
+          <TextField
+            label="Email"
+            placeholder="Enter your email"
+            value={data.email}
+            onChange={(e) => setData({ ...data, email: e.target.value })}
+          />
+          <TextField
+            label="Password"
+            placeholder="Enter your password"
+            value={data.password}
+            onChange={(e) => setData({ ...data, password: e.target.value })}
+          />
           <TextField
             label="Confirm Password"
             placeholder="Enter your password"
@@ -50,7 +70,9 @@ function Auth() {
             label="Business Tagline"
             placeholder="Enter your business tagline"
             value={data.businessTagline}
-            onChange={(e) => setData({ ...data, businessTagline: e.target.value })}
+            onChange={(e) =>
+              setData({ ...data, businessTagline: e.target.value })
+            }
           />
         </div>
         <button
