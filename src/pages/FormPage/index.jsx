@@ -22,7 +22,7 @@ function FormPage() {
     }
   };
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-300">
+    <div className="flex items-center justify-center min-h-screen ">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
         <div className="text-3xl font-semibold mb-6 text-center">
           Subscribe to {vendorName || "John Coffee Shop"} Loyalty Program!
