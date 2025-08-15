@@ -59,10 +59,10 @@ function Auth() {
     try {
       const response = await createVendor(data);
       if (response.email) {
-        showSuccess("Account created successfully! Redirecting to login...");
+        showSuccess("Account created successfully! Redirecting to Dashboard...");
         resetForm();
         setTimeout(() => {
-          navigate("/login");
+          navigate("/");
         }, 2000);
       } else {
         showError("Failed to create account. Please try again.");

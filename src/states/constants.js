@@ -1,5 +1,5 @@
 const { baseUrl, api } = {
-  baseUrl: "http://localhost:8000",
+  baseUrl: "https://b8313854cade.ngrok-free.app",
   api: {
     endpoints: {
       CREATE_PASS: "/pass/create/:vendorName",

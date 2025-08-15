@@ -25,6 +25,7 @@ function CustomerForm() {
     const fetchVendor = async () => {
       try {
         const vendor = await getPublicVendor(vendor_id);
+        console.log(vendor);
         if (!vendor || !vendor.business_name) {
           setVendorError('Vendor not found. Please check the link or contact the business.');
           return;
@@ -32,6 +33,7 @@ function CustomerForm() {
         setVendorName(vendor.business_name);
         showInfo(`Welcome to ${vendor.business_name}'s loyalty program!`);
       } catch (error) {
+        console.log(error);
         setVendorError('Vendor not found. Please check the link or contact the business.');
         showError('Failed to load vendor information');
       }

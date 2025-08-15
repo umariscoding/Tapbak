@@ -39,7 +39,7 @@ function Customers() {
       align: "center",
       render: (_, record) => (
         <div className="text-center">
-          <span className="text-blue-600 font-medium">{record.loyalty_card.loyalty_points}</span>
+          <span className="text-blue-600 font-medium">{record?.loyalty_card?.loyalty_points}</span>
         </div>
       ),
     },
@@ -56,7 +56,7 @@ function Customers() {
       align: "center",
       render: (_, record) => (
         <div className="text-center">
-          <span className="text-blue-600 font-medium">{record.loyalty_card.reward_available ? "Yes" : "No"}</span>
+          <span className="text-blue-600 font-medium">{record?.loyalty_card?.reward_available ? "Yes" : "No"}</span>
         </div>
       ),
     },

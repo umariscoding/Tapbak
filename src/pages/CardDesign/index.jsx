@@ -39,6 +39,7 @@ function CardDesign() {
           getVendorConfiguration(),
         ]);
         if (!isMounted) return;
+        console.log(fieldDefs)
 
         setFieldOptions(fieldDefs || []);
 
@@ -50,8 +51,12 @@ function CardDesign() {
             strip_image_url: vendorData.configuration.strip_image_url,
           });
         }
+        console.log(vendorData)
 
-        if (vendorData?.fields) {
+        // Only load existing fields if the points system is already configured
+        const hasPointsSystem = vendorData?.configuration?.points_system;
+        
+        if (hasPointsSystem && vendorData?.fields) {
           const headerFieldId =
             vendorData.fields
               .filter((field) => field.field_type === "header")
@@ -64,9 +69,15 @@ function CardDesign() {
             header_field: headerFieldId,
             secondary_fields: secondaryFieldIds,
           });
+        } else {
+          // Ensure fields are empty for initial setup
+          setFields({
+            header_field: null,
+            secondary_fields: [],
+          });
         }
 
-        if (vendorData?.configuration?.points_system) {
+        if (hasPointsSystem) {
           setIsSetupComplete(true);
         }
       } catch (error) {

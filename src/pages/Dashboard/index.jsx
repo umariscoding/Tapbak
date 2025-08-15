@@ -77,12 +77,12 @@ function Dashboard() {
           color: "text-orange-500 text-2xl font-bold",
         },
         {
-          value: statistics?.points_system.charAt(0).toUpperCase() + statistics?.points_system.slice(1),
+          value: statistics?.points_system ? statistics?.points_system?.charAt(0).toUpperCase() + statistics?.points_system.slice(1) : "N/A",
           label: "Loyalty System",
           color: "text-lg font-semibold text-gray-800",
         },
         {
-          value: statistics?.total_points + " " + (statistics?.points_system),
+          value: statistics?.total_points + " " + (statistics?.points_system ? statistics?.points_system : ""),
           label: "Reward At",
           color: "text-lg text-gray-800",
         },

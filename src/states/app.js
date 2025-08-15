@@ -69,7 +69,11 @@ export const createVendor = async (data) => {
     business_name: data.businessName,
     business_description: data.businessTagline,
   });
-  return response.data;
+  if(response){
+    window.localStorage.setItem("token", response.data.token);
+    window.localStorage.setItem("currentVendor", JSON.stringify(response.data.vendor));
+  }
+  return response.data.vendor;
 };
 
 export const loginVendor = async (data) => {
@@ -78,6 +82,7 @@ export const loginVendor = async (data) => {
     password: data.password,
   });
   if (response.data.message === "Login successful") {
+    window.localStorage.setItem("token", response.data.vendor.access_token);
     window.localStorage.setItem(
       "currentVendor",
       JSON.stringify(response.data.vendor)
@@ -88,6 +93,7 @@ export const loginVendor = async (data) => {
 
 export const getVendorConfiguration = async () => {
   const response = await apiClient.get(api.endpoints.GET_VENDOR_CONFIGURATION);
+  console.log(response.data)
   return {
     configuration: response.data.configuration,
     fields: response.data.fields,
@@ -149,9 +155,16 @@ export const updateVendor = async (data) => {
 };
 
 export const getPublicVendor = async (vendor_id) => {
+  console.log(vendor_id);
   const response = await apiClient.get(
-    api.endpoints.GET_PUBLIC_VENDOR.replace(":vendor_id", vendor_id)
+    api.endpoints.GET_PUBLIC_VENDOR.replace(":vendor_id", vendor_id),
+    {
+      headers: {
+        Authorization: undefined // Remove Authorization header for public endpoint
+      }
+    }
   );
+  console.log(response.data);
   return response.data;
 };
 
